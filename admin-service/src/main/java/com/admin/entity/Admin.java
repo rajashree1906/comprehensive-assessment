@@ -26,6 +26,8 @@ public class Admin {
     
     @NotNull(message="admin name cannot be blank")
 	private String adminName;
+    
+    
 	
 	
 
