@@ -1,0 +1,27 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('git checkout') {
+            steps {
+                git credentialsId: 'GitCredentials', url: 'https://github.com/rajashree1906/comprehensive-assessment.git'
+                bat 'mvn clean install -DskipTests=true'
+                echo 'build is done'
+            }
+        }
+        stage('docker image'){
+            steps{
+                bat 'docker build -t rajashreerout/admin-service .'
+                echo 'docker image is created'
+            }
+        }
+        stage('docker deploy'){
+            steps{
+                bat 'docker container rm -f user-service-container'
+                bat 'docker run --name user-service-container --network customerservicenetwork -itd -p 8082:8080 rajashreerout/admin-service'
+                bat 'docker run -d --name mysqldb --network userservicenetwork -e MYSQL_DATABASE=supermarket -e MYSQL_ROOT_PASSWORD=root@123 mysql'
+                echo 'docker container is created'
+            }
+        }
+    }
+}
